@@ -1,3 +1,3 @@
-module github.com/omniflow-oss/trace-plugin
+module trace-plugin
 
-go 1.22
+go 1.22.2
