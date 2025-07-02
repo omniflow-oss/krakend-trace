@@ -1,0 +1,59 @@
+name: Build & Publish KrakenD test-plugin
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.go'
+      - '.github/workflows/krakend-plugin.yml'
+      - 'runtime.Dockerfile'
+  release:
+    types: [created]
+
+env:
+  KRKN_VERSION: "2.10.1"
+  PLUGIN_NAME: "test-plugin.so"
+  DOCKERHUB_IMAGE: "${{ secrets.DOCKERHUB_USERNAME }}/krakend-test-plugin"
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 1️⃣ Compile plugin inside official builder image
+      - name: Compile test-plugin.so
+        run: |
+          mkdir -p .dist
+          docker run --rm \
+            -v "$PWD":/src -w /src/plugin \
+            krakend/builder:${{ env.KRKN_VERSION }} \
+            go build -trimpath -buildmode=plugin -o /src/.dist/${{ env.PLUGIN_NAME }}
+
+      # 2️⃣ Login to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 3️⃣ Build runtime image and push (only on release)
+      - name: Build & Push runtime image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: runtime.Dockerfile
+          push: ${{ github.event_name == 'release' }}
+          build-args: |
+            KRKN_VERSION=${{ env.KRKN_VERSION }}
+            PLUGIN_NAME=${{ env.PLUGIN_NAME }}
+          tags: |
+            ${{ env.DOCKERHUB_IMAGE }}:${{ github.sha }}
+            ${{ env.DOCKERHUB_IMAGE }}:${{ github.event.release.tag_name || 'edge' }}
