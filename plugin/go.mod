@@ -1,3 +1,3 @@
-module github.com/example/test-plugin
+module github.com/omniflow-oss/trace-plugin
 
 go 1.22
