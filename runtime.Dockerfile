@@ -1,6 +1,5 @@
 # runtime.Dockerfile
-ARG KRKN_VERSION
-ARG PLUGIN_NAME
+ARG KRKN_VERSION=2.10.1
 
 FROM krakend:${KRKN_VERSION}
 
@@ -8,9 +7,9 @@ ENV KRKN_PLUGIN_FOLDER=/etc/krakend/plugins
 USER root
 
 RUN mkdir -p ${KRKN_PLUGIN_FOLDER}
-COPY .dist/${PLUGIN_NAME} ${KRKN_PLUGIN_FOLDER}/${PLUGIN_NAME}
+COPY .dist/trace-plugin.so ${KRKN_PLUGIN_FOLDER}/trace-plugin.so
 
-# Copy your krakend.json if needed
+# Optional: add gateway configuration
 # COPY config/krakend.json /etc/krakend/krakend.json
 
 USER krakend
