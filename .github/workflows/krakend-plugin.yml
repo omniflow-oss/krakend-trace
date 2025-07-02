@@ -12,8 +12,8 @@ on:
 
 env:
   KRKN_VERSION: "2.10.1"
-  PLUGIN_NAME: "test-plugin.so"
-  DOCKERHUB_IMAGE: "${{ secrets.DOCKERHUB_USERNAME }}/krakend-test-plugin"
+  PLUGIN_NAME: "trace-plugin.so"
+  DOCKERHUB_IMAGE: "${{ secrets.DOCKERHUB_USERNAME }}/krakend-trace-plugin"
 
 jobs:
   build-and-publish:
