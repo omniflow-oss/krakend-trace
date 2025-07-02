@@ -24,3 +24,18 @@ docker build -f runtime.Dockerfile --build-arg KRKN_VERSION=2.10.1 -t krakend-tr
 # Run
 docker run -p 8080:8080 krakend-trace-plugin:local
 ```
+
+# Configure in the krakend config file
+```
+"extra_config": {
+  "plugin/http-client": {
+    "name": "krakend-trace-plugin",
+    "krakend-trace-plugin": {
+      "tracking_url":   "http://tracking.svc/api/tracking",
+      "timeout_ms":     2000,      // optional
+      "max_capture_kb": 256,       // optional
+      "verbose":        false      // optional (default)
+    }
+  }
+}
+```
