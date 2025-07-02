@@ -34,7 +34,7 @@ jobs:
           docker run --rm \
             -v "$PWD":/src -w /src/plugin \
             krakend/builder:${{ env.KRKN_VERSION }} \
-            go build -trimpath -buildmode=plugin -o /src/.dist/trace-plugin.so
+            go build -mod=vendor -buildmode=plugin -o /src/.dist/trace-plugin.so
 
       # 2️⃣ Log in to Docker Hub
       - name: Log in to Docker Hub
